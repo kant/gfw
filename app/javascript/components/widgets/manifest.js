@@ -33,6 +33,7 @@ import * as futureCarbonGains from './widgets/climate/future-carbon-gains';
 import * as cumulativeEmissions from './widgets/climate/cumulative-emissions';
 
 // Biodiversity
+import * as intactness from './widgets/biodiversity/intactness';
 // import * as gladBiodiversity from './widgets/biodiversity/glad-biodiversity';
 
 // Land Use
@@ -72,6 +73,7 @@ export default {
   futureCarbonGains,
   cumulativeEmissions,
   // biodiversity
+  intactness,
   // gladBiodiversity,
   // land use
   economicImpact,

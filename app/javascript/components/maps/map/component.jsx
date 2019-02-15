@@ -1,13 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
+import ReactMapGL from 'react-map-gl';
 
-import Map from 'wri-api-components/dist/map';
 import Loader from 'components/ui/loader';
 import Icon from 'components/ui/icon';
 
 import iconCrosshair from 'assets/icons/crosshair.svg';
-import LayerSpecProvider from 'providers/layerspec-provider';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 import Popup from './components/popup';
 import MapDraw from './components/draw';
@@ -17,12 +17,15 @@ import LayerManagerComponent from './components/layer-manager';
 import './styles.scss';
 
 class MapComponent extends PureComponent {
-  componentDidMount() {
-    requestAnimationFrame(() => {
-      this.map.invalidateSize();
-      L.control.scale({ maxWidth: 80 }).addTo(this.map); // eslint-disable-line
-    });
-  }
+  state = {
+    mapReady: false
+  };
+
+  getCursor = ({ isHovering, isDragging }) => {
+    if (isHovering) return 'pointer';
+    if (isDragging) return 'grabbing';
+    return 'grab';
+  };
 
   render() {
     const {
@@ -30,54 +33,53 @@ class MapComponent extends PureComponent {
       loading,
       mapOptions,
       basemap,
-      label,
-      bbox,
       draw,
       handleMapMove,
       handleMapInteraction,
-      customLayers,
+      zoom,
+      lat,
+      lng,
+      setMapRect,
+      setMap,
+      interactiveLayers,
       loadingMessage
     } = this.props;
+    const { mapReady } = this.state;
 
     return (
       <div
-        className={cx('c-map', className)}
+        className={cx('c-map', { 'no-pointer-events': draw }, className)}
         style={{ backgroundColor: basemap.color }}
+        ref={el => {
+          setMapRect(el);
+        }}
       >
-        <Map
-          customClass="map-wrapper"
-          onReady={map => {
-            this.map = map;
+        <ReactMapGL
+          ref={map => {
+            this.map = map && map.getMap();
+            setMap(map && map.getMap());
           }}
+          width="100%"
+          height="100%"
+          latitude={lat}
+          longitude={lng}
+          zoom={zoom}
+          mapStyle="mapbox://styles/resourcewatch/cjrkzkvhy9roh2smyy26avof0"
           mapOptions={mapOptions}
-          basemap={basemap}
-          label={label}
-          bounds={
-            bbox
-              ? {
-                bbox,
-                options: {
-                  padding: [50, 50]
-                }
-              }
-              : {}
-          }
-          events={{
-            moveend: handleMapMove
-          }}
+          onViewportChange={handleMapMove}
+          onClick={handleMapInteraction}
+          onLoad={() => this.setState({ mapReady: true })}
+          getCursor={this.getCursor}
+          interactiveLayerIds={interactiveLayers}
         >
-          {map => (
+          {mapReady && (
             <Fragment>
-              <LayerManagerComponent
-                map={map}
-                customLayers={customLayers}
-                handleMapInteraction={handleMapInteraction}
-              />
-              <Popup map={map} />
-              {draw && <MapDraw map={map} />}
+              <LayerManagerComponent map={this.map} />
+              <Popup map={this.map} />
+              <MapDraw map={this.map} drawing={draw} />
             </Fragment>
           )}
-        </Map>
+        </ReactMapGL>
         <Icon className="map-icon-crosshair" icon={iconCrosshair} />
         <MapAttributions className="map-attributions" />
         {loading && (
@@ -87,7 +89,6 @@ class MapComponent extends PureComponent {
             message={loadingMessage}
           />
         )}
-        <LayerSpecProvider />
       </div>
     );
   }
@@ -99,12 +100,15 @@ MapComponent.propTypes = {
   loadingMessage: PropTypes.string,
   mapOptions: PropTypes.object,
   basemap: PropTypes.object,
-  label: PropTypes.object,
+  setMapRect: PropTypes.func,
+  setMap: PropTypes.func,
   handleMapMove: PropTypes.func,
-  bbox: PropTypes.array,
   handleMapInteraction: PropTypes.func,
-  customLayers: PropTypes.array,
-  draw: PropTypes.bool
+  interactiveLayers: PropTypes.array,
+  draw: PropTypes.bool,
+  lat: PropTypes.number,
+  lng: PropTypes.number,
+  zoom: PropTypes.number
 };
 
 export default MapComponent;

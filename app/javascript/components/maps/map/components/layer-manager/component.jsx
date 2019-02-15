@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import isEmpty from 'lodash/isEmpty';
 import { LayerManager, Layer } from 'layer-manager/dist/components';
-import { PluginLeaflet } from 'layer-manager';
+import { PluginMapboxGl } from 'layer-manager';
 
 class LayerManagerComponent extends PureComponent {
   render() {
@@ -10,68 +9,79 @@ class LayerManagerComponent extends PureComponent {
       layers,
       geostore,
       setMapLoading,
-      draw,
-      map,
-      customLayers,
-      handleMapInteraction
+      basemap,
+      labels,
+      map
     } = this.props;
 
     return (
       <LayerManager
         map={map}
-        plugin={PluginLeaflet}
+        plugin={PluginMapboxGl}
         onLayerLoading={loading => setMapLoading(loading)}
       >
+        {labels &&
+          labels.url && (
+            <Layer
+              id="labels"
+              name="Labels"
+              provider="leaflet"
+              layerConfig={{
+                body: {
+                  url: labels.url
+                }
+              }}
+              zIndex={1100}
+            />
+          )}
         {geostore &&
           geostore.id && (
             <Layer
-              id="geostore"
+              id={geostore.id}
               name="Geojson"
-              provider="leaflet"
+              provider="geojson"
+              params={{
+                id: geostore.id
+              }}
               layerConfig={{
-                id: geostore.id,
-                type: 'geoJSON',
-                body: geostore.geojson,
-                options: {
-                  style: {
-                    stroke: true,
-                    color: '#4a4a4a',
-                    weight: 2,
-                    fill: false
-                  }
+                data: geostore.geojson,
+                body: {
+                  vectorLayers: [
+                    {
+                      id: `${geostore.id}-fill`,
+                      type: 'fill',
+                      source: geostore.id,
+                      paint: {
+                        'fill-color': 'transparent'
+                      }
+                    },
+                    {
+                      id: `${geostore.id}-line`,
+                      type: 'line',
+                      source: geostore.id,
+                      paint: {
+                        'line-color': '#000',
+                        'line-width': 2
+                      }
+                    }
+                  ]
                 }
               }}
-              zIndex={1090}
+              zIndex={1060}
             />
           )}
-        {customLayers &&
-          customLayers.length &&
-          customLayers.map(l => <Layer key={l.id} {...l} />)}
-        {layers &&
-          layers.map(l => {
-            const { interactionConfig } = l;
-            const { output, article } = interactionConfig || {};
-            const layer = {
-              ...l,
-              ...(!isEmpty(output) && {
-                interactivity: output.map(i => i.column),
-                events: {
-                  click: e => {
-                    if (!draw) {
-                      handleMapInteraction({
-                        e,
-                        layer: l,
-                        article,
-                        output
-                      });
-                    }
-                  }
-                }
-              })
-            };
-
-            return <Layer key={l.id} {...layer} />;
-          })}
+        {layers && layers.map(l => <Layer key={l.id} {...l} />)}
+        <Layer
+          id="basemap"
+          name="Basemap"
+          provider="leaflet"
+          layerConfig={{
+            body: {
+              url: basemap.url
+            }
+          }}
+          zIndex={100}
+        />
       </LayerManager>
     );
   }
@@ -80,12 +90,13 @@ class LayerManagerComponent extends PureComponent {
 LayerManagerComponent.propTypes = {
   loading: PropTypes.bool,
   layers: PropTypes.array,
+  basemap: PropTypes.object,
   geostore: PropTypes.object,
   setMapLoading: PropTypes.func,
   handleMapInteraction: PropTypes.func,
   draw: PropTypes.bool,
   map: PropTypes.object,
-  customLayers: PropTypes.array
+  labels: PropTypes.object
 };
 
 export default LayerManagerComponent;

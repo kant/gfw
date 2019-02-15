@@ -7,11 +7,10 @@ export const initialState = {
       lat: 27,
       lng: 12
     },
-    zoom: 3,
-    zoomControl: false,
+    zoom: 2,
     attributionControl: false,
     maxZoom: 19,
-    minZoom: 3,
+    minZoom: 2,
     basemap: {
       value: 'default'
     },

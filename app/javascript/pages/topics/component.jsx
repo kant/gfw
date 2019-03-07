@@ -23,9 +23,8 @@ class TopicsPage extends PureComponent {
         navigation: true,
         navigationPosition: 'right',
         anchors: this.anchors,
-        // fadingEffect: true,
-        // onLeave: (origin, destination, direction) =>
-        //   this.handleLeave(origin, destination, direction),
+        // onLeave: (origin, destination, direction) => {}
+        onLeave: () => this.handleLeave(),
         // afterLoad 3.X: (origin, destination, direction) => {}
         afterLoad: (section, index) => this.slideDidLoad(section, index)
       });
@@ -39,11 +38,13 @@ class TopicsPage extends PureComponent {
     } else {
       $('#fp-nav').show();
     }
+    if (this.activeSection) this.activeSection.classList.remove('leaving');
+    this.activeSection = document.querySelectorAll('.section')[section];
   }
 
-  // handleLeave(origin, destination, direction) {
-  //   console.log(origin, destination, direction);
-  // }
+  handleLeave() {
+    if (this.activeSection) this.activeSection.classList.add('leaving');
+  }
 
   render() {
     const { links, topicData } = this.props;
@@ -67,7 +68,6 @@ class TopicsPage extends PureComponent {
                       />
                       <Button
                         theme="theme-button-grey topics-btn"
-                        link="#footer"
                         onClick={() => {
                           /* global $ */
                           $('#fullpage').fullpage.moveTo('footer', 0);

@@ -118,6 +118,9 @@ Gfw::Application.routes.draw do
   get '/about' => 'about#index'
   get '/about(/:section)' => 'about#index'
 
+  get '/topics' => redirect('/topics/biodiversity')
+  get '/topics/:tab' => 'topics#index'
+
   # Small Grunts Fund
   get '/grants-and-fellowships' => 'grants_and_fellowships#index'
   get '/grants-and-fellowships/*all' => 'grants_and_fellowships#index'

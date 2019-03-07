@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import reducerRegistry from 'app/registry';
 import WebMercatorViewport from 'viewport-mercator-project';
 import isEqual from 'lodash/isEqual';
+import debounce from 'lodash/debounce';
 
 import {
   setInteraction,
@@ -21,40 +22,28 @@ const actions = {
 };
 
 class MapContainer extends PureComponent {
-  static propTypes = {
-    basemap: PropTypes.object,
-    mapOptions: PropTypes.object,
-    setLandsatBasemap: PropTypes.func
-  };
-
   state = {
     bbox: null,
     width: 0,
     height: 0,
-    map: null
+    map: null,
+    zoom: this.props.zoom,
+    lat: this.props.lat,
+    lng: this.props.lng
   };
 
   componentDidUpdate(prevProps, prevState) {
     const {
-      basemap,
-      mapOptions: { zoom },
       canBound,
       bbox,
       geostoreBbox,
       setMapSettings,
       layerBbox,
-      setLandsatBasemap,
-      selectedInteraction
+      selectedInteraction,
+      lat,
+      lng,
+      zoom
     } = this.props;
-
-    // update landsat basemap when changing zoom
-    if (basemap.value === 'landsat' && zoom !== prevProps.zoom) {
-      setLandsatBasemap({
-        basemap,
-        year: basemap.year,
-        zoom
-      });
-    }
 
     // only set bounding box if action allows it
     if (canBound && bbox !== prevProps.bbox) {
@@ -74,6 +63,19 @@ class MapContainer extends PureComponent {
     // if geostore changes
     if (geostoreBbox && geostoreBbox !== prevProps.geostoreBbox) {
       setMapSettings({ bbox: geostoreBbox });
+    }
+
+    // sync position props with state
+    if (
+      lat !== prevProps.lat ||
+      lng !== prevProps.lng ||
+      zoom !== prevProps.zoom
+    ) {
+      this.setPositionState({
+        zoom,
+        lat,
+        lng
+      });
     }
 
     // fit bounds on cluster if clicked
@@ -121,6 +123,10 @@ class MapContainer extends PureComponent {
     this.setState({ bbox });
   };
 
+  setPositionState = position => {
+    this.setState(position);
+  };
+
   setMapRect = map => {
     if (map && !this.state.width && !this.state.height) {
       const mapEl = map.getBoundingClientRect();
@@ -164,23 +170,35 @@ class MapContainer extends PureComponent {
 
   handleMapMove = viewport => {
     const { latitude, longitude, zoom } = viewport;
-    const { setMapSettings, mapOptions: { maxZoom, minZoom } } = this.props;
+    const { mapOptions: { maxZoom, minZoom } } = this.props;
     let newZoom = zoom;
     if (zoom > maxZoom) newZoom = maxZoom;
     if (zoom < minZoom) newZoom = minZoom;
 
-    setMapSettings({
+    this.setState({
+      zoom: newZoom,
+      lat: latitude,
+      lng: longitude
+    });
+
+    this.setMapViewport({
       zoom: newZoom,
       center: {
         lat: latitude,
         lng: longitude
-      },
-      canBound: false,
-      bbox: null
+      }
     });
 
     this.setBbox(null);
   };
+
+  setMapViewport = debounce(view => {
+    this.props.setMapSettings({
+      ...view,
+      canBound: false,
+      bbox: null
+    });
+  }, 300);
 
   handleMapInteraction = e => {
     const { draw, menuSection } = this.props;
@@ -207,6 +225,7 @@ MapContainer.propTypes = {
   bbox: PropTypes.array,
   geostoreBbox: PropTypes.array,
   setMapSettings: PropTypes.func,
+  mapOptions: PropTypes.object,
   setInteraction: PropTypes.func,
   layerBbox: PropTypes.array,
   draw: PropTypes.bool,

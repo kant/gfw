@@ -4,6 +4,9 @@ import isEmpty from 'lodash/isEmpty';
 import moment from 'moment';
 import intersection from 'lodash/intersection';
 import flatMap from 'lodash/flatMap';
+import sortBy from 'lodash/sortBy';
+
+import { getDayRange } from 'utils/dates';
 
 import { parseWidgetsWithOptions } from 'components/widgets/selectors';
 import { initialState } from './reducers';
@@ -253,8 +256,11 @@ export const getDatasetsWithConfig = createSelector(
                 ...(maxDateFormatted && {
                   date: maxDateFormatted
                 }),
-                ...((hasParamsTimeline || hasDecodeTimeline) && {
+                ...(hasParamsTimeline && {
                   ...timelineParams
+                }),
+                ...(maxDate && {
+                  maxDate
                 })
               }
             }),
@@ -267,16 +273,18 @@ export const getDatasetsWithConfig = createSelector(
             ...(l.decodeFunction && {
               decodeParams: {
                 ...l.decodeParams,
-                ...(layers &&
-                  layers.includes('confirmedOnly') && {
-                    confirmedOnly: true
-                  }),
+                ...(layers && {
+                  confirmedOnly: layers.includes('confirmedOnly') ? 1 : 0
+                }),
                 ...(maxDate && {
                   endDate: maxDate
                 }),
                 ...decodeParams,
                 ...(hasDecodeTimeline && {
                   ...timelineParams
+                }),
+                ...(maxDate && {
+                  maxDate
                 })
               }
             }),
@@ -310,16 +318,15 @@ export const getLayerGroups = createSelector(
   (datasets, activeDatasetsState) => {
     if (isEmpty(datasets) || isEmpty(activeDatasetsState)) return null;
 
-    return activeDatasetsState
-      .map(l => datasets.find(d => d.id === l.dataset))
-      .filter(l => l)
-      .map(d => {
-        const { metadata } = (d && d.layers.find(l => l.active)) || {};
-        return {
-          ...d,
-          metadata: metadata || d.metadata
-        };
-      });
+    return activeDatasetsState.map(layer => {
+      const dataset = datasets.find(d => d.id === layer.dataset);
+      const { metadata } =
+        (dataset && dataset.layers.find(l => l.active)) || {};
+      return {
+        ...dataset,
+        metadata: metadata || dataset.metadata
+      };
+    });
   }
 );
 
@@ -327,20 +334,23 @@ export const getLayerGroups = createSelector(
 export const getAllLayers = createSelector(getLayerGroups, layerGroups => {
   if (isEmpty(layerGroups)) return null;
 
-  return flatten(layerGroups.map(d => d.layers))
-    .filter(l => l.active && (!l.isRecentImagery || l.params.url))
-    .map((l, i) => {
-      let zIndex =
-        l.interactionConfig && l.interactionConfig.article
-          ? 1100 + i
-          : 1000 - i;
-      if (l.isRecentImagery) zIndex = 500;
-      if (l.isBoundary) zIndex = 1050 - i;
-      return {
-        ...l,
-        zIndex
-      };
-    });
+  return sortBy(
+    flatten(layerGroups.map(d => d.layers))
+      .filter(l => l.active && (!l.isRecentImagery || l.params.url))
+      .map((l, i) => {
+        let zIndex =
+          l.interactionConfig && l.interactionConfig.article
+            ? 1100 + i
+            : 1000 - i;
+        if (l.isRecentImagery) zIndex = 500;
+        if (l.isBoundary) zIndex = 1050 - i;
+        return {
+          ...l,
+          zIndex
+        };
+      }),
+    'zIndex'
+  );
 });
 
 // all layers for importing by other components
@@ -349,19 +359,47 @@ export const getActiveLayers = createSelector(getAllLayers, layers => {
   return layers.filter(l => !l.confirmedOnly);
 });
 
+export const getActiveLayersWithDates = createSelector(
+  getActiveLayers,
+  layers => {
+    if (isEmpty(layers)) return [];
+    return layers.map(l => {
+      const { decodeFunction, decodeParams } = l;
+      const { startDate, endDate } = decodeParams || {};
+
+      return {
+        ...l,
+        ...(decodeFunction &&
+          decodeParams && {
+            decodeParams: {
+              ...decodeParams,
+              ...(startDate && {
+                startYear: moment(startDate).year(),
+                startMonth: moment(startDate).month(),
+                startDay: moment(startDate).month()
+              }),
+              ...(endDate && {
+                endYear: moment(endDate).year(),
+                endMonth: moment(endDate).month(),
+                endDay: moment(endDate).month()
+              }),
+              ...getDayRange(decodeParams)
+            }
+          })
+      };
+    });
+  }
+);
+
 export const getInteractiveLayers = createSelector(getActiveLayers, layers => {
   if (isEmpty(layers)) return [];
   const interactiveLayers = layers.filter(
-    l =>
-      !isEmpty(l.interactionConfig) &&
-      (l.layerConfig.layers || l.layerConfig.body.vectorLayers)
+    l => !isEmpty(l.interactionConfig) && l.layerConfig.body.vectorLayers
   );
 
   return flatMap(
     interactiveLayers.reduce((arr, layer) => {
-      const clickableLayers =
-        (layer.layerConfig.layers && layer.layerConfig.layers) ||
-        layer.layerConfig.body.vectorLayers;
+      const clickableLayers = layer.layerConfig.body.vectorLayers;
 
       return [
         ...arr,
@@ -373,7 +411,7 @@ export const getInteractiveLayers = createSelector(getActiveLayers, layers => {
 
 // get widgets related to map layers and use them to build the layers
 export const getWidgetsWithLayerParams = createSelector(
-  [parseWidgetsWithOptions, getAllLayers],
+  [parseWidgetsWithOptions, getActiveLayersWithDates],
   (widgets, layers) => {
     if (!widgets || !widgets.length || !layers || !layers.length) return null;
     const layerIds = layers && layers.map(l => l.id);
@@ -414,7 +452,7 @@ export const getWidgetsWithLayerParams = createSelector(
 
 // flatten datasets into layers for the layer manager
 export const getActiveLayersWithWidgetSettings = createSelector(
-  [getAllLayers, getWidgetsWithLayerParams],
+  [getActiveLayersWithDates, getWidgetsWithLayerParams],
   (layers, widgets) => {
     if (isEmpty(layers)) return [];
     if (isEmpty(widgets)) return layers;

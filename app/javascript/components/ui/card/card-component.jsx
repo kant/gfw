@@ -6,6 +6,7 @@ import cx from 'classnames';
 
 import './card-styles.scss';
 import './themes/card-small.scss';
+import './themes/card-dark.scss';
 
 class Card extends PureComponent {
   // eslint-disable-line react/prefer-stateless-function
@@ -36,7 +37,11 @@ class Card extends PureComponent {
           {buttons && (
             <div className="buttons">
               {buttons.map((button, i) => (
-                <Button key={`card-button-${i}`} {...button}>
+                <Button
+                  key={`card-button-${i}`}
+                  theme="theme-button-light"
+                  {...button}
+                >
                   {button.text}
                 </Button>
               ))}

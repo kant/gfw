@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 
-import Biodiversity from 'pages/topics/content/biodiversity.json';
-import Commodities from 'pages/topics/content/commodities.json';
-import Climate from 'pages/topics/content/climate.json';
-import Water from 'pages/topics/content/water.json';
+import Biodiversity from 'pages/topics/content/biodiversity';
+import Commodities from 'pages/topics/content/commodities';
+import Climate from 'pages/topics/content/climate';
+import Water from 'pages/topics/content/water';
 
 import PageComponent from './component';
 
@@ -15,6 +15,7 @@ const contents = {
 };
 
 const mapStateToProps = ({ location }, { sections }) => ({
+  title: location.payload.tab || 'biodiversity',
   section:
     location && sections && sections[location.payload.tab || 'biodiversity'],
   topicData:

@@ -15,9 +15,9 @@ import './styles.scss';
 
 class TopicsHeader extends PureComponent {
   render() {
-    const { topics, intro, fullpageApi } = this.props;
+    const { topics, intro, fullpageApi, title } = this.props;
     return (
-      <Section className="fp-auto-height-responsive topics-header">
+      <Section className="c-topics-header">
         <div className="intro-top">
           <Cover
             title="Topics"
@@ -26,13 +26,14 @@ class TopicsHeader extends PureComponent {
             bgImage={bgImage}
           />
           <SubnavMenu links={topics} theme="theme-subnav-dark" />
-          <Intro intro={intro} />
+          <Intro className={title} intro={intro} />
         </div>
         <div className="intro-bottom">
           <div className="row">
             <div className="column small-12 medium-12">
-              <div className="scrollToDiscover">
+              <div className="scroll-to-discover">
                 <Button
+                  className="scroll-btn"
                   onClick={() => {
                     fullpageApi.moveSectionDown();
                   }}
@@ -52,7 +53,8 @@ class TopicsHeader extends PureComponent {
 TopicsHeader.propTypes = {
   topics: PropTypes.array,
   intro: PropTypes.object,
-  fullpageApi: PropTypes.object
+  fullpageApi: PropTypes.object,
+  title: PropTypes.string
 };
 
 export default TopicsHeader;

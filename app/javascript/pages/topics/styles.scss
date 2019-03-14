@@ -13,7 +13,7 @@
       margin-top: 80px;
 
       @media screen and (min-width: $screen-m) {
-        margin-bottom: 50px;
+        margin-bottom: 70px;
       }
     }
   }
@@ -41,7 +41,7 @@
     }
   }
 
-  // overwrite library styles	  .fp-slidesContainer {
+  // overwrite library styles
   .fp-tableCell {
     display: flex;
     flex-direction: column;
@@ -50,6 +50,10 @@
     .row {
       width: 100%;
     }
+  }
+
+  .fp-controlArrow {
+    display: none;
   }
 
   .fp-slidesContainer {

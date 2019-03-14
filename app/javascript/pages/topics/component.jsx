@@ -36,6 +36,7 @@ class TopicsPage extends PureComponent {
 
     if (this.state.skip) {
       this.setState({ skip: false, slideLeaving: slide });
+      this.fullpageApi.moveTo('slides', 3);
       return true;
     }
 
@@ -69,7 +70,7 @@ class TopicsPage extends PureComponent {
   };
 
   render() {
-    const { links, topicData } = this.props;
+    const { links, topicData, title } = this.props;
     const { cards, slides, intro } = topicData || {};
     const { slideLeaving } = this.state;
 
@@ -79,8 +80,8 @@ class TopicsPage extends PureComponent {
           <div className="l-topics-page">
             <Header isMobile={!isDesktop} />
             <ReactFullpage
-              scrollOverflow
               pluginWrapper={pluginWrapper}
+              scrollOverflow
               anchors={anchors}
               onLeave={this.handleLeave}
               onSlideLeave={this.handleSlideLeave}
@@ -93,6 +94,7 @@ class TopicsPage extends PureComponent {
                       topics={links}
                       intro={intro}
                       fullpageApi={fullpageApi}
+                      title={title}
                     />
                     <div className="section">
                       {slides &&
@@ -128,7 +130,7 @@ class TopicsPage extends PureComponent {
                           </div>
                         ))}
                     </div>
-                    <TopicsFooter cards={cards} />
+                    <TopicsFooter cards={cards} topic={title} />
                   </ReactFullpage.Wrapper>
                 );
               }}
@@ -142,7 +144,8 @@ class TopicsPage extends PureComponent {
 
 TopicsPage.propTypes = {
   links: PropTypes.array.isRequired,
-  topicData: PropTypes.object
+  topicData: PropTypes.object,
+  title: PropTypes.string
 };
 
 export default TopicsPage;

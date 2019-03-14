@@ -1,11 +1,11 @@
 import investigateImage from 'pages/topics/assets/biodiversity/cards/investigate.png';
 import exploreImage from 'pages/topics/assets/biodiversity/cards/explore.png';
 import tigersImage from 'pages/topics/assets/biodiversity/cards/tigers.png';
+import tiger from 'pages/topics/assets/biodiversity/tiger.svg';
 
 export default {
   intro: {
-    img: 'tiger',
-    alt: 'sad tiger',
+    img: tiger,
     title: '80% of terrestrial species live in forests.',
     text:
       'We are currently undergoing the sixth great mass extinction of species. Human activity is driving extinction at a rate 1,000 to 10,000 times beyond natural levels. Protecting forest habitats is key to protecting our planet’s remaining biodiversity.'
@@ -47,7 +47,8 @@ export default {
       summary:
         'View recent deforestation alerts and satellite imagery and and subscribe to alerts',
       extLink: 'http://bit.ly/2TeK815',
-      image: investigateImage
+      image: investigateImage,
+      btnText: 'view on map'
     },
     {
       id: 'map',
@@ -55,7 +56,8 @@ export default {
       summary:
         'View important areas for biodiversity, biodiversity hotspots and more',
       extLink: 'http://bit.ly/2TeK815',
-      image: exploreImage
+      image: exploreImage,
+      btnText: 'view on map'
     },
     {
       id: 'tigers',
@@ -63,26 +65,17 @@ export default {
       summary:
         '13 countries aim to double the wild tiger population by 2022 - the next year of the tiger. View tree cover loss in the past year in important tiger habitat.',
       extLink: 'http://bit.ly/2TeJQY3',
-      image: tigersImage
+      image: tigersImage,
+      btnText: 'view on map'
     },
     {
       id: 'feedback',
       title:
         'What other biodiversity data and analysis would you like to see on GFW?',
       summary: 'Tell us!',
-      extLink: ''
+      theme: 'theme-card-dark',
+      extLink: '',
+      btnText: 'feedback'
     }
-    // {
-    //   id: 'loss',
-    //   title: 'Where is forested biodiversity being lost?',
-    //   summary: 'See tree cover loss trends in important biodiversity areas.',
-    //   extLink: ''
-    // },
-    // {
-    //   id: 'top20',
-    //   title: 'Which biodiversity areas are experiencing tree cover loss?',
-    //   summary: 'Prioritize resources and encourage action against deforestation.',
-    //   extLink: ''
-    // }
   ]
 };

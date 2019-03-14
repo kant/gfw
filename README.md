@@ -48,12 +48,12 @@ Next clone the gfw repo:
 $ git clone https://github.com/Vizzuality/gfw.git
 ```
 
-Using rbenv, install and set Ruby 2.4.0 in the main app directory:
+Using rbenv, install and set Ruby 2.6.2 in the main app directory:
 
 ```bash
 $ cd gfw
-$ rvm install 2.4.0
-$ rvm use 2.4.0
+$ rvm install 2.6.2
+$ rvm use 2.6.2
 ```
 
 Now let's install Ruby on Rails:

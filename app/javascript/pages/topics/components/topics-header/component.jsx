@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import Cover from 'components/cover';
 import SubnavMenu from 'components/subnav-menu';
 import Intro from 'pages/topics/components/intro';
-import Section from 'pages/topics/components/section';
 import arrowIcon from 'assets/icons/arrow-down.svg';
 import Icon from 'components/ui/icon';
 import Button from 'components/ui/button';
@@ -15,9 +14,9 @@ import './styles.scss';
 
 class TopicsHeader extends PureComponent {
   render() {
-    const { topics, intro, fullpageApi, title } = this.props;
+    const { topics, intro, fullpageApi, title, handleSkipToTools } = this.props;
     return (
-      <Section className="c-topics-header">
+      <div className="c-topics-header">
         <div className="intro-top">
           <Cover
             title="Topics"
@@ -26,7 +25,11 @@ class TopicsHeader extends PureComponent {
             bgImage={bgImage}
           />
           <SubnavMenu links={topics} theme="theme-subnav-dark" />
-          <Intro className={title} intro={intro} />
+          <Intro
+            className={title}
+            intro={intro}
+            handleSkipToTools={handleSkipToTools}
+          />
         </div>
         <div className="intro-bottom">
           <div className="row">
@@ -40,12 +43,12 @@ class TopicsHeader extends PureComponent {
                 >
                   <Icon icon={arrowIcon} />
                 </Button>
-                <p>Click to discover</p>
+                <p>Scroll to discover</p>
               </div>
             </div>
           </div>
         </div>
-      </Section>
+      </div>
     );
   }
 }
@@ -54,7 +57,8 @@ TopicsHeader.propTypes = {
   topics: PropTypes.array,
   intro: PropTypes.object,
   fullpageApi: PropTypes.object,
-  title: PropTypes.string
+  title: PropTypes.string,
+  handleSkipToTools: PropTypes.func
 };
 
 export default TopicsHeader;

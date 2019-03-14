@@ -24,15 +24,31 @@ const pluginWrapper = () => ({
 
 class TopicsPage extends PureComponent {
   state = {
-    fullpageApi: null,
     skip: false,
     slideLeaving: 0
+  };
+
+  componentDidUpdate(prevProps) {
+    const { title } = this.props;
+    if (this.fullpageApi && title !== prevProps.title) {
+      this.resetState();
+      this.fullpageApi.reBuild();
+    }
+  }
+
+  resetState = () => {
+    this.setState({ skip: false, slideLeaving: 0 });
   };
 
   handleLeave = (origin, destination, direction) => {
     const location = window.location.hash && window.location.hash.split('/');
     const slide =
       (location && location.length > 1 && parseInt(location[1], 10)) || 0;
+
+    if (origin.anchor === 'intro' && destination.anchor === 'footer') {
+      this.setState({ skip: false });
+      return true;
+    }
 
     if (this.state.skip) {
       this.setState({ skip: false, slideLeaving: slide });
@@ -69,6 +85,12 @@ class TopicsPage extends PureComponent {
     this.setState({ slideLeaving: origin.index });
   };
 
+  handleSkipToTools = () => {
+    this.setState({ skip: true }, () => {
+      this.fullpageApi.moveTo('footer');
+    });
+  };
+
   render() {
     const { links, topicData, title } = this.props;
     const { cards, slides, intro } = topicData || {};
@@ -83,6 +105,8 @@ class TopicsPage extends PureComponent {
               pluginWrapper={pluginWrapper}
               scrollOverflow
               anchors={anchors}
+              animateAnchor={false}
+              slidesNavigation
               onLeave={this.handleLeave}
               onSlideLeave={this.handleSlideLeave}
               render={({ fullpageApi }) => {
@@ -90,12 +114,15 @@ class TopicsPage extends PureComponent {
 
                 return (
                   <ReactFullpage.Wrapper>
-                    <TopicsHeader
-                      topics={links}
-                      intro={intro}
-                      fullpageApi={fullpageApi}
-                      title={title}
-                    />
+                    <div className="header-section section">
+                      <TopicsHeader
+                        topics={links}
+                        intro={intro}
+                        fullpageApi={fullpageApi}
+                        title={title}
+                        handleSkipToTools={this.handleSkipToTools}
+                      />
+                    </div>
                     <div className="section">
                       {slides &&
                         slides.map((s, index) => (
@@ -112,12 +139,8 @@ class TopicsPage extends PureComponent {
                                     subtitle={s.subtitle}
                                   />
                                   <Button
-                                    theme="theme-button-grey topics-btn"
-                                    onClick={() => {
-                                      this.setState({ skip: true }, () => {
-                                        fullpageApi.moveTo('footer', 0);
-                                      });
-                                    }}
+                                    theme="theme-button-light topics-btn"
+                                    onClick={this.handleSkipToTools}
                                   >
                                     Related tools
                                   </Button>
@@ -130,7 +153,9 @@ class TopicsPage extends PureComponent {
                           </div>
                         ))}
                     </div>
-                    <TopicsFooter cards={cards} topic={title} />
+                    <div className="section">
+                      <TopicsFooter cards={cards} topic={title} />
+                    </div>
                   </ReactFullpage.Wrapper>
                 );
               }}

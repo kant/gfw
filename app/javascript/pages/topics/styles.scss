@@ -19,12 +19,6 @@
   }
 
   .topics-btn {
-    color: $slate-light;
-    border: 1px solid #97bd3d;
-    text-transform: uppercase;
-    font-size: 14px;
-    font-weight: 500;
-
     @media screen and (min-width: $screen-m) {
       position: absolute;
       bottom: calc(100px - 2.5rem);
@@ -52,8 +46,42 @@
     }
   }
 
+  .header-section {
+    .fp-tableCell {
+      justify-content: space-between;
+    }
+  }
+
   .fp-controlArrow {
     display: none;
+  }
+
+  .fp-slidesNav {
+    bottom: calc(50% - 50px);
+    right: 40px;
+    left: unset !important;
+
+    li {
+      display: block;
+      margin: rem(25px) 0;
+
+      a {
+        span {
+          background-color: $grey-dark;
+          width: 8px;
+          height: 8px;
+          margin: -2px 0 0 -4px;
+        }
+
+        &.active {
+          span {
+            background-color: $green-gfw;
+            width: 12px;
+            height: 12px;
+          }
+        }
+      }
+    }
   }
 
   .fp-slidesContainer {

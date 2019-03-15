@@ -25,7 +25,8 @@ const pluginWrapper = () => ({
 class TopicsPage extends PureComponent {
   state = {
     skip: false,
-    slideLeaving: 0
+    slideLeaving: 0,
+    showRelated: window.location.hash.includes('slides')
   };
 
   componentDidUpdate(prevProps) {
@@ -81,6 +82,14 @@ class TopicsPage extends PureComponent {
     return true;
   };
 
+  handleMobileLeave = (origin, destination) => {
+    if (destination.anchor === 'slides') {
+      this.setState({ showRelated: true });
+    } else {
+      this.setState({ showRelated: false });
+    }
+  };
+
   handleSlideLeave = (section, origin) => {
     this.setState({ slideLeaving: origin.index });
   };
@@ -91,24 +100,73 @@ class TopicsPage extends PureComponent {
     });
   };
 
+  getSlide = (s, index, isDesktop) => (
+    <div
+      key={s.subtitle}
+      className={cx({ last: index === 3 }, { slide: isDesktop })}
+    >
+      <div className="row">
+        <div className="column small-12 medium-4">
+          <div className="topic-content">
+            <Text
+              className={cx({
+                leaving: this.state.slideLeaving === index
+              })}
+              text={s.text}
+              title={s.title}
+              subtitle={s.subtitle}
+            />
+            {isDesktop && (
+              <Button
+                className="topic-btn"
+                theme="theme-button-light"
+                onClick={this.handleSkipToTools}
+              >
+                Related tools
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className="column small-12 medium-8">
+          <div className="topic-image">
+            <Image url={s.src} description={s.subtitle} prompts={s.prompts} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   render() {
     const { links, topicData, title } = this.props;
     const { cards, slides, intro } = topicData || {};
-    const { slideLeaving } = this.state;
 
     return (
       <MediaQuery minWidth={SCREEN_M}>
         {isDesktop => (
           <div className="l-topics-page">
             <Header isMobile={!isDesktop} />
+            {!isDesktop &&
+              this.state.showRelated && (
+                <div className="related-tools-btn">
+                  <Button
+                    theme="theme-button-light"
+                    onClick={() => {
+                      this.fullpageApi.moveSectionDown();
+                    }}
+                  >
+                    Related Tools
+                  </Button>
+                </div>
+              )}
             <ReactFullpage
               pluginWrapper={pluginWrapper}
               scrollOverflow
               anchors={anchors}
               animateAnchor={false}
-              slidesNavigation
-              onLeave={this.handleLeave}
+              slidesNavigation={isDesktop}
+              onLeave={isDesktop ? this.handleLeave : this.handleMobileLeave}
               onSlideLeave={this.handleSlideLeave}
+              paddingBottom="55px"
               render={({ fullpageApi }) => {
                 this.fullpageApi = fullpageApi;
 
@@ -121,41 +179,14 @@ class TopicsPage extends PureComponent {
                         fullpageApi={fullpageApi}
                         title={title}
                         handleSkipToTools={this.handleSkipToTools}
+                        isDesktop={isDesktop}
                       />
                     </div>
-                    <div className="section">
+                    <div className="slides section">
                       {slides &&
-                        slides.map((s, index) => (
-                          <div key={s.subtitle} className="slide">
-                            <div className="row">
-                              <div className="column small-12 medium-4">
-                                <div className="topic-content">
-                                  <Text
-                                    className={cx({
-                                      leaving: slideLeaving === index
-                                    })}
-                                    text={s.text}
-                                    title={s.title}
-                                    subtitle={s.subtitle}
-                                  />
-                                  <Button
-                                    theme="theme-button-light topics-btn"
-                                    onClick={this.handleSkipToTools}
-                                  >
-                                    Related tools
-                                  </Button>
-                                </div>
-                              </div>
-                              <div className="column small-12 medium-8 topic-image">
-                                <Image
-                                  url={s.src}
-                                  description={s.subtitle}
-                                  prompts={s.prompts}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        ))}
+                        slides.map((s, index) =>
+                          this.getSlide(s, index, isDesktop)
+                        )}
                     </div>
                     <div className="section">
                       <TopicsFooter cards={cards} topic={title} />

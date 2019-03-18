@@ -1,20 +1,18 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import ReactFullpage from '@fullpage/react-fullpage';
-import cx from 'classnames';
 
 import MediaQuery from 'react-responsive';
 import { SCREEN_M } from 'utils/constants';
 
 import Header from 'components/header';
-import TopicsHeader from 'pages/topics/components/topics-header';
-import TopicsFooter from 'pages/topics/components/topics-footer';
-import Text from 'pages/topics/components/topics-text';
-import Image from 'pages/topics/components/topics-image';
 import Button from 'components/ui/button';
 
-import scrollOverflow from './vendors/scrolloverflow.min';
+import TopicsHeader from './components/topics-header';
+import TopicsFooter from './components/topics-footer';
+import TopicsSlide from './components/topics-slide';
 
+import scrollOverflow from './vendors/scrolloverflow.min';
 import './styles.scss';
 
 const anchors = ['intro', 'slides', 'footer'];
@@ -100,42 +98,6 @@ class TopicsPage extends PureComponent {
     });
   };
 
-  getSlide = (s, index, isDesktop) => (
-    <div
-      key={s.subtitle}
-      className={cx({ last: index === 3 }, { slide: isDesktop })}
-    >
-      <div className="row">
-        <div className="column small-12 medium-4">
-          <div className="topic-content">
-            <Text
-              className={cx({
-                leaving: this.state.slideLeaving === index
-              })}
-              text={s.text}
-              title={s.title}
-              subtitle={s.subtitle}
-            />
-            {isDesktop && (
-              <Button
-                className="topic-btn"
-                theme="theme-button-light"
-                onClick={this.handleSkipToTools}
-              >
-                Related tools
-              </Button>
-            )}
-          </div>
-        </div>
-        <div className="column small-12 medium-8">
-          <div className="topic-image">
-            <Image url={s.src} description={s.subtitle} prompts={s.prompts} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   render() {
     const { links, topicData, title } = this.props;
     const { cards, slides, intro } = topicData || {};
@@ -166,12 +128,12 @@ class TopicsPage extends PureComponent {
               slidesNavigation={isDesktop}
               onLeave={isDesktop ? this.handleLeave : this.handleMobileLeave}
               onSlideLeave={this.handleSlideLeave}
+              controlArrows={false}
               render={({ fullpageApi }) => {
                 this.fullpageApi = fullpageApi;
-
                 return (
                   <ReactFullpage.Wrapper>
-                    <div className="header-section section">
+                    <div className="topic-header section">
                       <TopicsHeader
                         topics={links}
                         intro={intro}
@@ -181,13 +143,20 @@ class TopicsPage extends PureComponent {
                         isDesktop={isDesktop}
                       />
                     </div>
-                    <div className="slides section">
+                    <div className="topic-slides section">
                       {slides &&
-                        slides.map((s, index) =>
-                          this.getSlide(s, index, isDesktop)
-                        )}
+                        slides.map((s, index) => (
+                          <TopicsSlide
+                            key={s.subtitle}
+                            {...s}
+                            index={index}
+                            isDesktop={isDesktop}
+                            isLeaving={this.state.slideLeaving === index}
+                            isLast={index === 3}
+                          />
+                        ))}
                     </div>
-                    <div className="section">
+                    <div className="topic-footer section">
                       <TopicsFooter cards={cards} topic={title} />
                     </div>
                   </ReactFullpage.Wrapper>

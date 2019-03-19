@@ -102,12 +102,12 @@ Gfw::Application.routes.draw do
   get '/landing' => 'landing#index'
 
   # map
-  get '/map' => 'map_v2#index'
-  get '/map(/:type)(/:adm0)(/:adm1)(/:adm2)' => 'map_v2#index'
-  get '/map/*all' => 'map_v2#index'
-  get '/embed/map' => 'map_v2#index'
-  get '/embed/map(/:type)(/:adm0)(/:adm1)(/:adm2)' => 'map_v2#index'
-  get '/embed/map/*all' => 'map_v2#index'
+  get '/map' => 'map#index'
+  get '/map(/:type)(/:adm0)(/:adm1)(/:adm2)' => 'map#index'
+  get '/map/*all' => 'map#index'
+  get '/embed/map' => 'map#index'
+  get '/embed/map(/:type)(/:adm0)(/:adm1)(/:adm2)' => 'map#index'
+  get '/embed/map/*all' => 'map#index'
 
   # dashboards
   get '/dashboards' => redirect('/dashboards/global')

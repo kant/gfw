@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
+import Header from 'components/header';
+import Footer from 'components/footer';
 import Cover from 'components/cover';
 import SubnavMenu from 'components/subnav-menu';
 import Projects from 'pages/about/section-projects';
@@ -33,6 +35,7 @@ class Page extends PureComponent {
     const { sections, setModalVideoData } = this.props;
     return (
       <div className="l-main">
+        <Header />
         <Cover
           title="About"
           description="Global Forest Watch (GFW) is an online platform that provides data and tools for monitoring forests. By harnessing cutting-edge technology, GFW allows anyone to access near real-time information about where and how forests are changing around the world."
@@ -69,6 +72,7 @@ class Page extends PureComponent {
         })}
         <Join />
         <ModalVideo />
+        <Footer />
       </div>
     );
   }

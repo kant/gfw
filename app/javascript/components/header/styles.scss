@@ -94,8 +94,7 @@ $full-screen-height: rem(75px);
           background-color: transparent;
         }
 
-        &.-active,
-        &:hover {
+        &.-active {
           &::after {
             background-color: $green-gfw;
           }

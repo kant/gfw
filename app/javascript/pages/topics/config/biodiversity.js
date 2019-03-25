@@ -20,6 +20,15 @@ import exploreLarge from 'pages/topics/assets/biodiversity/cards/explore@2x.png'
 import tigers from 'pages/topics/assets/biodiversity/cards/tigers.png';
 import tigersLarge from 'pages/topics/assets/biodiversity/cards/tigers@2x.png';
 
+// animations
+import scene1 from 'pages/topics/assets/biodiversity/animations/scene1.json';
+import birds1 from 'pages/topics/assets/biodiversity/animations/birds1.json';
+import scene2 from 'pages/topics/assets/biodiversity/animations/scene2.json';
+import birds2 from 'pages/topics/assets/biodiversity/animations/birds2.json';
+import scene3 from 'pages/topics/assets/biodiversity/animations/scene3.json';
+import scene4 from 'pages/topics/assets/biodiversity/animations/scene4.json';
+import birds4 from 'pages/topics/assets/biodiversity/animations/birds4.json';
+
 export default {
   intro: {
     title: '80% of terrestrial species live in forests.',
@@ -45,6 +54,17 @@ export default {
             '/map?map=eyJjZW50ZXIiOnsibGF0IjoyNywibG5nIjoxMn0sInpvb20iOjIsImRhdGFzZXRzIjpbeyJkYXRhc2V0IjoiZmRjOGRjMWItMjcyOC00YTc5LWIyM2YtYjA5NDg1MDUyYjhkIiwibGF5ZXJzIjpbIjZmNjc5OGU2LTM5ZWMtNDE2My05NzllLTE4MmE3NGNhNjVlZSIsImM1ZDFlMDEwLTM4M2EtNDcxMy05YWFhLTQ0ZjcyOGMwNTcxYyJdLCJvcGFjaXR5IjoxLCJ2aXNpYmlsaXR5Ijp0cnVlfSx7ImRhdGFzZXQiOiJhNjg0YTliYi02M2YyLTRiZWEtYmY2Mi1mZDVlODBkMjNkNzUiLCJsYXllcnMiOlsiZGZkOWRlYjYtOGQzOS00NjQwLTg1NzEtNDM4OWQ1ZDg4OThhIl0sIm9wYWNpdHkiOjEsInZpc2liaWxpdHkiOnRydWV9LHsiZGF0YXNldCI6ImZlZTVmYzM4LTdhNjItNDliOC04ODc0LWRmYTMxY2JiMWVmNiIsImxheWVycyI6WyI0M2EyMDVmZS1hYWQzLTRkYjEtODgwNy1jMzk5YTMyNjQzNDkiXSwib3BhY2l0eSI6MSwidmlzaWJpbGl0eSI6dHJ1ZX1dLCJiYXNlbWFwIjp7InZhbHVlIjoiZGVmYXVsdCJ9LCJsYWJlbCI6ImRlZmF1bHQiLCJjYW5Cb3VuZCI6dHJ1ZX0%3D&menu=eyJtZW51U2VjdGlvbiI6IiJ9',
           position: [65, 38]
         }
+      ],
+      animations: [
+        {
+          id: 'scene1',
+          data: scene1
+        },
+        {
+          id: 'birds',
+          data: birds1,
+          behind: true
+        }
       ]
     },
     {
@@ -63,6 +83,17 @@ export default {
           link:
             '/map?map=eyJjZW50ZXIiOnsibGF0IjoyNywibG5nIjoxMn0sInpvb20iOjIsImRhdGFzZXRzIjpbeyJkYXRhc2V0IjoiZmRjOGRjMWItMjcyOC00YTc5LWIyM2YtYjA5NDg1MDUyYjhkIiwibGF5ZXJzIjpbIjZmNjc5OGU2LTM5ZWMtNDE2My05NzllLTE4MmE3NGNhNjVlZSIsImM1ZDFlMDEwLTM4M2EtNDcxMy05YWFhLTQ0ZjcyOGMwNTcxYyJdLCJvcGFjaXR5IjoxLCJ2aXNpYmlsaXR5Ijp0cnVlfSx7ImRhdGFzZXQiOiJmZWU1ZmMzOC03YTYyLTQ5YjgtODg3NC1kZmEzMWNiYjFlZjYiLCJsYXllcnMiOlsiZjEzZjg2Y2ItMDhiNS00ZTZjLWJiOGQtYjQ3ODIwNTJmOWU1Il0sIm9wYWNpdHkiOjEsInZpc2liaWxpdHkiOnRydWV9XSwiYmFzZW1hcCI6eyJ2YWx1ZSI6ImRlZmF1bHQifSwibGFiZWwiOiJkZWZhdWx0IiwiY2FuQm91bmQiOmZhbHNlLCJiYm94IjpudWxsfQ%3D%3D&menu=eyJtZW51U2VjdGlvbiI6IiIsImRhdGFzZXRDYXRlZ29yeSI6IiJ9',
           position: [80, 60]
+        }
+      ],
+      animations: [
+        {
+          id: 'scene2',
+          data: scene2
+        },
+        {
+          id: 'birds2',
+          data: birds2,
+          behind: true
         }
       ]
     },
@@ -83,6 +114,12 @@ export default {
             'https://blog.globalforestwatch.org/data/worlds-last-intact-forests-are-becoming-increasingly-fragmented',
           position: [38, 45]
         }
+      ],
+      animations: [
+        {
+          id: 'scene3',
+          data: scene3
+        }
       ]
     },
     {
@@ -101,6 +138,17 @@ export default {
           link:
             'https://blog.globalforestwatch.org/uncategorized/glad-alerts-help-protect-sumatras-leuser-rainforest-ecosystem',
           position: [35, 55]
+        }
+      ],
+      animations: [
+        {
+          id: 'scene4',
+          data: scene4
+        },
+        {
+          id: 'birds4',
+          data: birds4,
+          behind: true
         }
       ]
     }

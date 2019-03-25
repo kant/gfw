@@ -56,8 +56,8 @@ class SectionProjectsModal extends PureComponent {
               settings={{
                 slidesToShow: 1,
                 arrows: false,
-                infinite: false,
-                dots: true
+                dots: true,
+                infinite: false
               }}
             >
               {data.images &&
